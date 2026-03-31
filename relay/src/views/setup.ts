@@ -416,7 +416,7 @@ export function setupPage(data: SetupPageData): string {
         ` : `
         <div class="field-row">
           <input type="text" readonly value="" placeholder="${data.hasClientToken ? 'Token hidden — rotate to reveal a new one' : 'No token — generate one below'}" id="clientToken" class="hidden-token" />
-          <button class="btn btn-copy" disabled>Copy</button>
+          <button class="btn btn-copy" onclick="copy('clientToken')" disabled>Copy</button>
           <button class="btn btn-danger" onclick="rotateClientToken()" title="${data.hasClientToken ? 'Revoke current token and generate a new one — disconnects active sessions' : 'Generate your first client token'}">${data.hasClientToken ? 'Rotate' : 'Generate'}</button>
         </div>
         `}

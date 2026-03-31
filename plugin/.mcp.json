@@ -2,7 +2,7 @@
   "mcpServers": {
     "github-ci": {
       "command": "bun",
-      "args": ["run", "--cwd", "${CLAUDE_PLUGIN_ROOT}", "--shell=bun", "--silent", "server.ts"]
+      "args": ["run", "${CLAUDE_PLUGIN_ROOT}/server.ts"]
     }
   }
 }
