@@ -6,6 +6,10 @@ interface SetupPageData {
   hasClientToken: boolean
 }
 
+const copyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
+
+const checkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+
 export function setupPage(data: SetupPageData): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -289,13 +293,57 @@ export function setupPage(data: SetupPageData): string {
       background: var(--input-bg);
       border: 1px solid var(--input-border);
       border-radius: 8px;
-      padding: 12px 16px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .code-line {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 8px;
+      border-bottom: 1px solid var(--input-border);
+    }
+
+    .code-line:last-child {
+      border-bottom: none;
+    }
+
+    .code-line code {
+      flex: 1;
       font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
       font-size: 13px;
-      line-height: 1.6;
-      overflow-x: auto;
-      margin-top: 8px;
       color: var(--text);
+      overflow-x: auto;
+      white-space: nowrap;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .code-line .copy-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s;
+      padding: 0;
+    }
+
+    .copy-icon:hover {
+      background: var(--btn-hover);
+      color: var(--text);
+    }
+
+    .copy-icon.copied {
+      color: var(--copied-bg);
     }
 
     .token-warning {
@@ -393,9 +441,11 @@ export function setupPage(data: SetupPageData): string {
         <div class="step-num">2</div>
         <div class="step-content">
           In Claude Code, add the marketplace and install the plugin:
-          <div class="code-block">/plugin marketplace add MosheBenZacharia/claude-code-github-ci-channel
-/plugin install github-ci@github-ci-channel
-/reload-plugins</div>
+          <div class="code-block">
+            <div class="code-line"><code>/plugin marketplace add MosheBenZacharia/claude-code-github-ci-channel</code><button class="copy-icon" onclick="copyCmd(this)" title="Copy">${copyIcon}</button></div>
+            <div class="code-line"><code>/plugin install github-ci@github-ci-channel</code><button class="copy-icon" onclick="copyCmd(this)" title="Copy">${copyIcon}</button></div>
+            <div class="code-line"><code>/reload-plugins</code><button class="copy-icon" onclick="copyCmd(this)" title="Copy">${copyIcon}</button></div>
+          </div>
         </div>
       </div>
 
@@ -403,7 +453,9 @@ export function setupPage(data: SetupPageData): string {
         <div class="step-num">3</div>
         <div class="step-content">
           Configure the plugin with your client token:
-          <div class="code-block">/github-ci:configure &lt;your-client-token&gt;</div>
+          <div class="code-block">
+            <div class="code-line"><code>/github-ci:configure &lt;your-client-token&gt;</code><button class="copy-icon" onclick="copyCmd(this)" title="Copy">${copyIcon}</button></div>
+          </div>
         </div>
       </div>
 
@@ -411,7 +463,9 @@ export function setupPage(data: SetupPageData): string {
         <div class="step-num">4</div>
         <div class="step-content">
           Restart Claude Code with channels enabled:
-          <div class="code-block">claude --dangerously-load-development-channels --channels plugin:github-ci@github-ci-channel</div>
+          <div class="code-block">
+            <div class="code-line"><code>claude --dangerously-load-development-channels --channels plugin:github-ci@github-ci-channel</code><button class="copy-icon" onclick="copyCmd(this)" title="Copy">${copyIcon}</button></div>
+          </div>
           Push a commit or open a PR. When a CI check fails on your current repo and commit, Claude Code will be notified.
         </div>
       </div>
@@ -419,6 +473,18 @@ export function setupPage(data: SetupPageData): string {
   </div>
 
   <script>
+    function copyCmd(btn) {
+      const code = btn.parentElement.querySelector('code');
+      if (!code) return;
+      navigator.clipboard.writeText(code.textContent);
+      btn.innerHTML = '${checkIcon}';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = '${copyIcon}';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+
     function copy(id) {
       const input = document.getElementById(id);
       if (!input || !input.value) return;
