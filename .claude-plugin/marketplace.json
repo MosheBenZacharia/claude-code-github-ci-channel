@@ -1,0 +1,14 @@
+{
+  "name": "github-ci-channel",
+  "owner": {
+    "name": "Moshe Ben-Zacharia"
+  },
+  "plugins": [
+    {
+      "name": "github-ci",
+      "source": "./plugin",
+      "description": "GitHub Actions CI failure channel for Claude Code",
+      "version": "1.0.0"
+    }
+  ]
+}

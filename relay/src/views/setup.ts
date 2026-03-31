@@ -392,15 +392,27 @@ export function setupPage(data: SetupPageData): string {
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          In Claude Code, install the plugin and configure with your client token:
-          <div class="code-block">/github-ci:configure &lt;your-client-token&gt;</div>
+          In Claude Code, add the marketplace and install the plugin:
+          <div class="code-block">/plugin marketplace add MosheBenZacharia/claude-code-github-ci-channel
+/plugin install github-ci@github-ci-channel
+/reload-plugins</div>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          Push a commit or open a PR. When a CI check fails on your current repo and commit, Claude Code will be notified automatically.
+          Configure the plugin with your client token:
+          <div class="code-block">/github-ci:configure &lt;your-client-token&gt;</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          Restart Claude Code with channels enabled:
+          <div class="code-block">claude --dangerously-load-development-channels --channels plugin:github-ci@github-ci-channel</div>
+          Push a commit or open a PR. When a CI check fails on your current repo and commit, Claude Code will be notified.
         </div>
       </div>
     </div>
