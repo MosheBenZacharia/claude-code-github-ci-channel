@@ -18,8 +18,8 @@ export function setupPage(data: SetupPageData): string {
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0d1117;
-      color: #e6edf3;
+      background: #ECEAE4;
+      color: #1c1e21;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -32,32 +32,45 @@ export function setupPage(data: SetupPageData): string {
     }
 
     .header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
       margin-bottom: 32px;
     }
 
-    .header h1 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 4px;
+    .header-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
     }
 
-    .header p {
-      color: #8b949e;
+    .header-text h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1c1e21;
+      margin-bottom: 2px;
+    }
+
+    .header-text p {
+      color: #656d76;
       font-size: 14px;
     }
 
     .card {
-      background: #161b22;
-      border: 1px solid #30363d;
+      background: #ffffff;
+      border: 1px solid #d8d8d4;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
 
     .card h2 {
       font-size: 14px;
       font-weight: 600;
-      color: #8b949e;
+      color: #656d76;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 16px;
@@ -75,7 +88,7 @@ export function setupPage(data: SetupPageData): string {
       display: block;
       font-size: 13px;
       font-weight: 500;
-      color: #8b949e;
+      color: #656d76;
       margin-bottom: 6px;
     }
 
@@ -90,18 +103,19 @@ export function setupPage(data: SetupPageData): string {
 
     input[type="text"], .secret-display {
       width: 100%;
-      background: #0d1117;
-      border: 1px solid #30363d;
+      background: #f6f5f2;
+      border: 1px solid #d8d8d4;
       border-radius: 8px;
       padding: 10px 12px;
-      color: #e6edf3;
+      color: #1c1e21;
       font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
       font-size: 13px;
       outline: none;
     }
 
     input[type="text"]:focus {
-      border-color: #58a6ff;
+      border-color: #0969da;
+      box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
     }
 
     .btn {
@@ -113,15 +127,15 @@ export function setupPage(data: SetupPageData): string {
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
-      border: 1px solid #30363d;
-      background: #21262d;
-      color: #e6edf3;
+      border: 1px solid #d8d8d4;
+      background: #f6f5f2;
+      color: #1c1e21;
       transition: background 0.15s;
       white-space: nowrap;
     }
 
     .btn:hover {
-      background: #30363d;
+      background: #e8e6e1;
     }
 
     .btn-copy {
@@ -129,17 +143,18 @@ export function setupPage(data: SetupPageData): string {
     }
 
     .btn-copy.copied {
-      background: #238636;
-      border-color: #238636;
+      background: #2da44e;
+      border-color: #2da44e;
+      color: #ffffff;
     }
 
     .btn-danger {
-      border-color: #f8514966;
-      color: #f85149;
+      border-color: #cf222e44;
+      color: #cf222e;
     }
 
     .btn-danger:hover {
-      background: #f8514915;
+      background: #cf222e0d;
     }
 
     .rotate-row {
@@ -148,23 +163,23 @@ export function setupPage(data: SetupPageData): string {
       justify-content: space-between;
       margin-top: 12px;
       padding-top: 12px;
-      border-top: 1px solid #30363d;
+      border-top: 1px solid #d8d8d4;
     }
 
     .rotate-row span {
       font-size: 12px;
-      color: #8b949e;
+      color: #656d76;
     }
 
     .alert {
-      background: #0e2a1f;
-      border: 1px solid #238636;
+      background: #dafbe1;
+      border: 1px solid #2da44e;
       border-radius: 8px;
       padding: 14px 16px;
       margin-bottom: 16px;
       font-size: 13px;
       line-height: 1.5;
-      color: #3fb950;
+      color: #116329;
     }
 
     .alert strong {
@@ -179,7 +194,7 @@ export function setupPage(data: SetupPageData): string {
     .steps h2 {
       font-size: 14px;
       font-weight: 600;
-      color: #8b949e;
+      color: #656d76;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 12px;
@@ -195,27 +210,27 @@ export function setupPage(data: SetupPageData): string {
       flex-shrink: 0;
       width: 28px;
       height: 28px;
-      background: #21262d;
-      border: 1px solid #30363d;
+      background: #f6f5f2;
+      border: 1px solid #d8d8d4;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 13px;
       font-weight: 600;
-      color: #58a6ff;
+      color: #0969da;
     }
 
     .step-content {
       padding-top: 4px;
       font-size: 14px;
       line-height: 1.5;
-      color: #c9d1d9;
+      color: #1c1e21;
     }
 
     .step-content code {
-      background: #0d1117;
-      border: 1px solid #30363d;
+      background: #f6f5f2;
+      border: 1px solid #d8d8d4;
       border-radius: 4px;
       padding: 1px 6px;
       font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
@@ -223,8 +238,8 @@ export function setupPage(data: SetupPageData): string {
     }
 
     .code-block {
-      background: #0d1117;
-      border: 1px solid #30363d;
+      background: #f6f5f2;
+      border: 1px solid #d8d8d4;
       border-radius: 8px;
       padding: 12px 16px;
       font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
@@ -232,21 +247,21 @@ export function setupPage(data: SetupPageData): string {
       line-height: 1.6;
       overflow-x: auto;
       margin-top: 8px;
-      color: #c9d1d9;
+      color: #1c1e21;
     }
 
     .token-warning {
-      background: #2a1e0e;
-      border: 1px solid #d29922;
+      background: #fff8c5;
+      border: 1px solid #d4a72c;
       border-radius: 8px;
       padding: 14px 16px;
       margin-bottom: 16px;
       font-size: 13px;
-      color: #d29922;
+      color: #7a4e05;
     }
 
     .hidden-token {
-      color: #484f58;
+      color: #8b949e;
       font-style: italic;
     }
   </style>
@@ -254,8 +269,11 @@ export function setupPage(data: SetupPageData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>GitHub CI Channel</h1>
-      <p>Signed in as <strong>${esc(data.githubLogin)}</strong></p>
+      <img src="/icon.jpg" alt="GitHub CI Channel" class="header-icon" />
+      <div class="header-text">
+        <h1>GitHub CI Channel</h1>
+        <p>Signed in as <strong>${esc(data.githubLogin)}</strong></p>
+      </div>
     </div>
 
     ${data.clientToken ? `
