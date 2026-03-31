@@ -16,10 +16,68 @@ export function setupPage(data: SetupPageData): string {
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: #ECEAE4;
+      --text: #1c1e21;
+      --text-muted: #656d76;
+      --card-bg: #ffffff;
+      --card-border: #d8d8d4;
+      --card-shadow: rgba(0,0,0,0.04);
+      --input-bg: #f6f5f2;
+      --input-border: #d8d8d4;
+      --focus-color: #0969da;
+      --focus-shadow: rgba(9,105,218,0.15);
+      --btn-bg: #f6f5f2;
+      --btn-hover: #e8e6e1;
+      --btn-border: #d8d8d4;
+      --copied-bg: #2da44e;
+      --danger-color: #cf222e;
+      --danger-border: #cf222e44;
+      --danger-hover: #cf222e0d;
+      --alert-bg: #dafbe1;
+      --alert-border: #2da44e;
+      --alert-text: #116329;
+      --warn-bg: #fff8c5;
+      --warn-border: #d4a72c;
+      --warn-text: #7a4e05;
+      --accent: #0969da;
+      --muted-token: #8b949e;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --text: #e6edf3;
+        --text-muted: #8b949e;
+        --card-bg: #161b22;
+        --card-border: #30363d;
+        --card-shadow: rgba(0,0,0,0.2);
+        --input-bg: #0d1117;
+        --input-border: #30363d;
+        --focus-color: #58a6ff;
+        --focus-shadow: rgba(88,166,255,0.15);
+        --btn-bg: #21262d;
+        --btn-hover: #30363d;
+        --btn-border: #30363d;
+        --copied-bg: #238636;
+        --danger-color: #f85149;
+        --danger-border: #f8514966;
+        --danger-hover: #f8514915;
+        --alert-bg: #0e2a1f;
+        --alert-border: #238636;
+        --alert-text: #3fb950;
+        --warn-bg: #2a1e0e;
+        --warn-border: #d29922;
+        --warn-text: #d29922;
+        --accent: #58a6ff;
+        --muted-token: #484f58;
+      }
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #ECEAE4;
-      color: #1c1e21;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -49,28 +107,28 @@ export function setupPage(data: SetupPageData): string {
     .header-text h1 {
       font-size: 24px;
       font-weight: 600;
-      color: #1c1e21;
+      color: var(--text);
       margin-bottom: 2px;
     }
 
     .header-text p {
-      color: #656d76;
+      color: var(--text-muted);
       font-size: 14px;
     }
 
     .card {
-      background: #ffffff;
-      border: 1px solid #d8d8d4;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 16px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 2px var(--card-shadow);
     }
 
     .card h2 {
       font-size: 14px;
       font-weight: 600;
-      color: #656d76;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 16px;
@@ -88,7 +146,7 @@ export function setupPage(data: SetupPageData): string {
       display: block;
       font-size: 13px;
       font-weight: 500;
-      color: #656d76;
+      color: var(--text-muted);
       margin-bottom: 6px;
     }
 
@@ -103,19 +161,19 @@ export function setupPage(data: SetupPageData): string {
 
     input[type="text"], .secret-display {
       width: 100%;
-      background: #f6f5f2;
-      border: 1px solid #d8d8d4;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       padding: 10px 12px;
-      color: #1c1e21;
+      color: var(--text);
       font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
       font-size: 13px;
       outline: none;
     }
 
     input[type="text"]:focus {
-      border-color: #0969da;
-      box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
+      border-color: var(--focus-color);
+      box-shadow: 0 0 0 3px var(--focus-shadow);
     }
 
     .btn {
@@ -127,15 +185,15 @@ export function setupPage(data: SetupPageData): string {
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
-      border: 1px solid #d8d8d4;
-      background: #f6f5f2;
-      color: #1c1e21;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text);
       transition: background 0.15s;
       white-space: nowrap;
     }
 
     .btn:hover {
-      background: #e8e6e1;
+      background: var(--btn-hover);
     }
 
     .btn-copy {
@@ -143,18 +201,18 @@ export function setupPage(data: SetupPageData): string {
     }
 
     .btn-copy.copied {
-      background: #2da44e;
-      border-color: #2da44e;
+      background: var(--copied-bg);
+      border-color: var(--copied-bg);
       color: #ffffff;
     }
 
     .btn-danger {
-      border-color: #cf222e44;
-      color: #cf222e;
+      border-color: var(--danger-border);
+      color: var(--danger-color);
     }
 
     .btn-danger:hover {
-      background: #cf222e0d;
+      background: var(--danger-hover);
     }
 
     .rotate-row {
@@ -163,23 +221,23 @@ export function setupPage(data: SetupPageData): string {
       justify-content: space-between;
       margin-top: 12px;
       padding-top: 12px;
-      border-top: 1px solid #d8d8d4;
+      border-top: 1px solid var(--card-border);
     }
 
     .rotate-row span {
       font-size: 12px;
-      color: #656d76;
+      color: var(--text-muted);
     }
 
     .alert {
-      background: #dafbe1;
-      border: 1px solid #2da44e;
+      background: var(--alert-bg);
+      border: 1px solid var(--alert-border);
       border-radius: 8px;
       padding: 14px 16px;
       margin-bottom: 16px;
       font-size: 13px;
       line-height: 1.5;
-      color: #116329;
+      color: var(--alert-text);
     }
 
     .alert strong {
@@ -194,7 +252,7 @@ export function setupPage(data: SetupPageData): string {
     .steps h2 {
       font-size: 14px;
       font-weight: 600;
-      color: #656d76;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 12px;
@@ -210,27 +268,27 @@ export function setupPage(data: SetupPageData): string {
       flex-shrink: 0;
       width: 28px;
       height: 28px;
-      background: #f6f5f2;
-      border: 1px solid #d8d8d4;
+      background: var(--btn-bg);
+      border: 1px solid var(--card-border);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 13px;
       font-weight: 600;
-      color: #0969da;
+      color: var(--accent);
     }
 
     .step-content {
       padding-top: 4px;
       font-size: 14px;
       line-height: 1.5;
-      color: #1c1e21;
+      color: var(--text);
     }
 
     .step-content code {
-      background: #f6f5f2;
-      border: 1px solid #d8d8d4;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 4px;
       padding: 1px 6px;
       font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
@@ -238,8 +296,8 @@ export function setupPage(data: SetupPageData): string {
     }
 
     .code-block {
-      background: #f6f5f2;
-      border: 1px solid #d8d8d4;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       padding: 12px 16px;
       font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
@@ -247,21 +305,21 @@ export function setupPage(data: SetupPageData): string {
       line-height: 1.6;
       overflow-x: auto;
       margin-top: 8px;
-      color: #1c1e21;
+      color: var(--text);
     }
 
     .token-warning {
-      background: #fff8c5;
-      border: 1px solid #d4a72c;
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
       border-radius: 8px;
       padding: 14px 16px;
       margin-bottom: 16px;
       font-size: 13px;
-      color: #7a4e05;
+      color: var(--warn-text);
     }
 
     .hidden-token {
-      color: #8b949e;
+      color: var(--muted-token);
       font-style: italic;
     }
   </style>
