@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 
-const DEFAULT_RELAY_URL = 'wss://github-ci-relay.up.railway.app/connect'
+const DEFAULT_RELAY_URL = 'wss://relay-production-5d82.up.railway.app/connect'
 
 export interface ChannelConfig {
   clientToken: string
