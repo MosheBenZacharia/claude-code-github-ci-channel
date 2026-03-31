@@ -314,8 +314,8 @@ export function setupPage(data: SetupPageData): string {
       font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
       font-size: 13px;
       color: var(--text);
-      overflow-x: auto;
-      white-space: nowrap;
+      word-break: break-all;
+      white-space: normal;
       background: none;
       border: none;
       padding: 0;
