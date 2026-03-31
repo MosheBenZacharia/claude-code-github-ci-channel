@@ -215,18 +215,8 @@ export function setupPage(data: SetupPageData): string {
       background: var(--danger-hover);
     }
 
-    .rotate-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--card-border);
-    }
-
-    .rotate-row span {
-      font-size: 12px;
-      color: var(--text-muted);
+    .btn[title] {
+      position: relative;
     }
 
     .alert {
@@ -363,10 +353,7 @@ export function setupPage(data: SetupPageData): string {
         <div class="field-row">
           <input type="text" readonly value="${esc(data.webhookSecret)}" id="webhookSecret" />
           <button class="btn btn-copy" onclick="copy('webhookSecret')">Copy</button>
-        </div>
-        <div class="rotate-row">
-          <span>Rotate if compromised</span>
-          <button class="btn btn-danger" onclick="rotateWebhookSecret()">Rotate Secret</button>
+          <button class="btn btn-danger" onclick="rotateWebhookSecret()" title="Rotate if compromised — you'll need to update your GitHub webhook settings">Rotate</button>
         </div>
       </div>
 
@@ -376,17 +363,15 @@ export function setupPage(data: SetupPageData): string {
         <div class="field-row">
           <input type="text" readonly value="${esc(data.clientToken)}" id="clientToken" />
           <button class="btn btn-copy" onclick="copy('clientToken')">Copy</button>
+          <button class="btn btn-danger" onclick="rotateClientToken()" title="Revoke current token and generate a new one — disconnects active sessions">Rotate</button>
         </div>
         ` : `
         <div class="field-row">
           <input type="text" readonly value="" placeholder="${data.hasClientToken ? 'Token hidden — rotate to reveal a new one' : 'No token — generate one below'}" id="clientToken" class="hidden-token" />
           <button class="btn btn-copy" disabled>Copy</button>
+          <button class="btn btn-danger" onclick="rotateClientToken()" title="${data.hasClientToken ? 'Revoke current token and generate a new one — disconnects active sessions' : 'Generate your first client token'}">${data.hasClientToken ? 'Rotate' : 'Generate'}</button>
         </div>
         `}
-        <div class="rotate-row">
-          <span>${data.hasClientToken ? 'Rotate to revoke old token and get a new one' : 'Generate your first client token'}</span>
-          <button class="btn btn-danger" onclick="rotateClientToken()">${data.hasClientToken ? 'Rotate Token' : 'Generate Token'}</button>
-        </div>
       </div>
     </div>
 
