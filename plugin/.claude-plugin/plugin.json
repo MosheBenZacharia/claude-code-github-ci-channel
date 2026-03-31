@@ -1,0 +1,6 @@
+{
+  "name": "github-ci",
+  "description": "GitHub Actions CI failure channel for Claude Code",
+  "version": "1.0.0",
+  "keywords": ["github", "actions", "ci", "channel", "mcp"]
+}
