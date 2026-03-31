@@ -3,6 +3,7 @@ import { getDb } from '../db.js'
 import { verifyHmacSha256 } from '../crypto.js'
 import { isDuplicate } from '../dedupe.js'
 import { broadcastToUser } from '../connections.js'
+import { logWebhook } from '../webhook-log.js'
 
 interface UserRow {
   id: string
@@ -28,10 +29,19 @@ webhook.post('/webhook/:userId', async (c) => {
     return c.text('Invalid signature', 401)
   }
 
+  const deliveryId = c.req.header('X-GitHub-Delivery') ?? 'unknown'
+  const event = c.req.header('X-GitHub-Event') ?? 'unknown'
+
   // Dedupe
-  const deliveryId = c.req.header('X-GitHub-Delivery')
-  if (deliveryId && isDuplicate(userId, deliveryId)) {
-    console.error(`[webhook] Duplicate delivery ${deliveryId} for user ${userId}`)
+  if (deliveryId !== 'unknown' && isDuplicate(userId, deliveryId)) {
+    logWebhook(userId, {
+      deliveryId,
+      event,
+      action: '',
+      status: 'duplicate',
+      summary: `Duplicate ${event} delivery`,
+      timestamp: Date.now(),
+    })
     return c.text('OK', 200)
   }
 
@@ -43,30 +53,79 @@ webhook.post('/webhook/:userId', async (c) => {
     return c.text('Invalid JSON', 400)
   }
 
-  // Filter: only check_run completed with failure/timed_out
-  const event = c.req.header('X-GitHub-Event')
-  if (event !== 'check_run') {
+  const action = payload.action ?? ''
+  const repo = payload.repository?.full_name ?? ''
+
+  // Ping events
+  if (event === 'ping') {
+    logWebhook(userId, {
+      deliveryId,
+      event,
+      action: '',
+      status: 'received',
+      summary: repo ? `Ping from ${repo}` : 'Webhook connected',
+      timestamp: Date.now(),
+    })
     return c.text('OK', 200)
   }
 
-  if (payload.action !== 'completed') {
+  // Filter: only check_run completed with failure/timed_out
+  if (event !== 'check_run') {
+    logWebhook(userId, {
+      deliveryId,
+      event,
+      action,
+      status: 'filtered',
+      summary: `${event} event (not check_run)`,
+      timestamp: Date.now(),
+    })
+    return c.text('OK', 200)
+  }
+
+  if (action !== 'completed') {
+    logWebhook(userId, {
+      deliveryId,
+      event,
+      action,
+      status: 'filtered',
+      summary: `check_run ${action} (waiting for completed)`,
+      timestamp: Date.now(),
+    })
     return c.text('OK', 200)
   }
 
   const conclusion = payload.check_run?.conclusion
+  const checkName = payload.check_run?.name ?? 'unknown'
+
   if (conclusion !== 'failure' && conclusion !== 'timed_out') {
+    logWebhook(userId, {
+      deliveryId,
+      event,
+      action,
+      status: 'filtered',
+      summary: `${checkName}: ${conclusion}`,
+      timestamp: Date.now(),
+    })
     return c.text('OK', 200)
   }
 
   // Broadcast
   const envelope = JSON.stringify({
-    deliveryId: deliveryId ?? 'unknown',
+    deliveryId,
     event: 'check_run',
     payload,
   })
 
   broadcastToUser(userId, envelope)
-  console.error(`[webhook] Broadcast check_run failure to user ${userId} (delivery=${deliveryId})`)
+
+  logWebhook(userId, {
+    deliveryId,
+    event,
+    action,
+    status: 'broadcast',
+    summary: `${checkName}: ${conclusion} on ${repo}`,
+    timestamp: Date.now(),
+  })
 
   return c.text('OK', 200)
 })

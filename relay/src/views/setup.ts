@@ -360,6 +360,76 @@ export function setupPage(data: SetupPageData): string {
       color: var(--muted-token);
       font-style: italic;
     }
+
+    .log-empty {
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .log-table th {
+      text-align: left;
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .log-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: middle;
+    }
+
+    .log-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .log-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .log-badge.received {
+      background: var(--alert-bg);
+      color: var(--alert-text);
+    }
+
+    .log-badge.broadcast {
+      background: var(--alert-bg);
+      color: var(--alert-text);
+    }
+
+    .log-badge.filtered {
+      background: var(--input-bg);
+      color: var(--text-muted);
+    }
+
+    .log-badge.duplicate {
+      background: var(--warn-bg);
+      color: var(--warn-text);
+    }
+
+    .log-time {
+      color: var(--text-muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .log-event {
+      font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -470,6 +540,13 @@ export function setupPage(data: SetupPageData): string {
         </div>
       </div>
     </div>
+
+    <div class="card">
+      <h2>Recent Webhook Deliveries</h2>
+      <div id="webhook-log">
+        <p class="log-empty">No deliveries yet. Add the webhook to your GitHub repo to see events here.</p>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -522,6 +599,33 @@ export function setupPage(data: SetupPageData): string {
         document.getElementById('webhookSecret').value = data.webhookSecret;
       }
     }
+
+    async function pollWebhookLog() {
+      try {
+        const res = await fetch('/me/webhook-log');
+        const entries = await res.json();
+        const el = document.getElementById('webhook-log');
+        if (!entries.length) {
+          el.innerHTML = '<p class="log-empty">No deliveries yet. Add the webhook to your GitHub repo to see events here.</p>';
+          return;
+        }
+        el.innerHTML = '<table class="log-table"><thead><tr><th>Status</th><th>Event</th><th>Summary</th><th>Time</th></tr></thead><tbody>' +
+          entries.map(e => {
+            const t = new Date(e.timestamp);
+            const time = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            return '<tr>' +
+              '<td><span class="log-badge ' + e.status + '">' + e.status + '</span></td>' +
+              '<td class="log-event">' + e.event + '</td>' +
+              '<td>' + e.summary + '</td>' +
+              '<td class="log-time">' + time + '</td>' +
+              '</tr>';
+          }).join('') +
+          '</tbody></table>';
+      } catch {}
+    }
+
+    pollWebhookLog();
+    setInterval(pollWebhookLog, 5000);
   </script>
 </body>
 </html>`

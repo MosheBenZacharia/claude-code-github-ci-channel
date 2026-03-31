@@ -6,6 +6,7 @@ import { generateId, hashToken } from '../crypto.js'
 import { verifySession } from '../session.js'
 import { disconnectByTokenHash } from '../connections.js'
 import { setupPage } from '../views/setup.js'
+import { getWebhookLog } from '../webhook-log.js'
 
 interface UserRow {
   id: string
@@ -113,6 +114,12 @@ export function createMeRoutes(config: RelayConfig) {
     db.run('UPDATE users SET webhook_secret = ? WHERE id = ?', [newSecret, user.id])
 
     return c.json({ webhookSecret: newSecret })
+  })
+
+  me.get('/me/webhook-log', (c) => {
+    const user = getAuthedUser(c, config.sessionSecret)
+    if (!user) return c.json({ error: 'Unauthorized' }, 401)
+    return c.json(getWebhookLog(user.id))
   })
 
   return me
