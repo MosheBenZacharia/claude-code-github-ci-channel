@@ -1,10 +1,11 @@
 import { Hono } from 'hono'
-import { getCookie } from 'hono/cookie'
+import { getCookie, setCookie } from 'hono/cookie'
 import type { RelayConfig } from '../config.js'
 import { getDb } from '../db.js'
 import { generateId, hashToken } from '../crypto.js'
 import { verifySession } from '../session.js'
 import { disconnectByTokenHash } from '../connections.js'
+import { setupPage } from '../views/setup.js'
 
 interface UserRow {
   id: string
@@ -38,13 +39,36 @@ export function createMeRoutes(config: RelayConfig) {
       .query('SELECT token_hash FROM client_tokens WHERE user_id = ? AND revoked_at IS NULL ORDER BY created_at DESC LIMIT 1')
       .get(user.id) as TokenRow | null
 
-    return c.json({
-      userId: user.id,
-      githubLogin: user.github_login,
-      webhookUrl: `${config.publicUrl}/webhook/${user.id}`,
-      webhookSecret: user.webhook_secret,
-      hasClientToken: !!activeToken,
-    })
+    // Check for flash token from initial signup
+    const flashToken = getCookie(c, 'flash_token')
+    if (flashToken) {
+      setCookie(c, 'flash_token', '', { path: '/me', maxAge: 0 })
+    }
+
+    const webhookUrl = `${config.publicUrl}/webhook/${user.id}`
+
+    // Return JSON for API clients
+    const accept = c.req.header('Accept') ?? ''
+    if (accept.includes('application/json')) {
+      return c.json({
+        userId: user.id,
+        githubLogin: user.github_login,
+        webhookUrl,
+        webhookSecret: user.webhook_secret,
+        hasClientToken: !!activeToken,
+      })
+    }
+
+    // Return HTML setup page
+    return c.html(
+      setupPage({
+        githubLogin: user.github_login,
+        webhookUrl,
+        webhookSecret: user.webhook_secret,
+        clientToken: flashToken ?? null,
+        hasClientToken: !!activeToken,
+      }),
+    )
   })
 
   me.post('/me/rotate-client-token', async (c) => {

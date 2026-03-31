@@ -87,6 +87,17 @@ export function createAuthRoutes(config: RelayConfig) {
       maxAge: 60 * 60 * 24 * 30, // 30 days
     })
 
+    // Flash the initial client token so /me can show it once
+    if (clientToken) {
+      setCookie(c, 'flash_token', clientToken, {
+        httpOnly: true,
+        secure: config.publicUrl.startsWith('https'),
+        sameSite: 'Lax',
+        path: '/me',
+        maxAge: 60,
+      })
+    }
+
     return c.redirect('/me')
   })
 
