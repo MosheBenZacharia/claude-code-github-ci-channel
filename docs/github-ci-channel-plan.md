@@ -100,20 +100,20 @@ Mark tasks as complete by changing `[ ]` to `[x]`.
 - [x] Configure the required environment variables in Railway
 - [x] Expose the relay over HTTPS/WSS
 - [x] Verify that `GET /health` works through the deployed URL
-- [ ] Verify that a redeploy preserves the SQLite database on the attached volume
-- [ ] Verify that channel clients reconnect after a relay restart or redeploy
+- [x] Verify that a redeploy preserves the SQLite database on the attached volume
+- [x] Verify that channel clients reconnect after a relay restart or redeploy
 
 ## Phase 9 — Testing
 
-- [ ] Add unit tests for webhook HMAC validation
-- [ ] Add unit tests for client-token authentication
-- [ ] Add unit tests for delivery dedupe behavior
-- [ ] Add unit tests for token rotation evicting live sockets
-- [ ] Add unit tests for repo normalization
-- [ ] Add unit tests for repo + commit matching
-- [ ] Add integration tests for relay webhook intake to WebSocket delivery
-- [ ] Add integration tests for the local channel server receiving and filtering events
-- [ ] Run an end-to-end manual test with a real GitHub repository and a deliberately failing check run
+- [x] Add unit tests for webhook HMAC validation
+- [x] Add unit tests for client-token authentication
+- [x] Add unit tests for delivery dedupe behavior
+- [x] Add unit tests for token rotation evicting live sockets
+- [x] Add unit tests for repo normalization
+- [x] Add unit tests for repo + commit matching
+- [x] Add integration tests for relay webhook intake to WebSocket delivery
+- [x] Add integration tests for the local channel server receiving and filtering events
+- [x] Run an end-to-end manual test with a real GitHub repository and a deliberately failing check run
 
 ## Phase 10 — Release Readiness
 
