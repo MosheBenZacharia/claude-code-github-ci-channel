@@ -40,6 +40,16 @@ export function broadcastToUser(userId: string, message: string) {
   }
 }
 
+export function pingAllClients() {
+  for (const set of clients.values()) {
+    for (const client of set) {
+      try {
+        client.ws.ping()
+      } catch {}
+    }
+  }
+}
+
 export function disconnectByTokenHash(userId: string, tokenHash: string) {
   const set = clients.get(userId)
   if (!set) return

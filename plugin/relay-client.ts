@@ -17,9 +17,17 @@ export function connectToRelay(mcp: Server, config: ChannelConfig) {
       headers: { Authorization: `Bearer ${config.clientToken}` },
     } as any)
 
+    let pingInterval: ReturnType<typeof setInterval> | null = null
+
     ws.addEventListener('open', () => {
       console.error('[github-ci] Connected to relay')
       backoff = 1000
+      // Send pings every 30s to keep connection alive
+      pingInterval = setInterval(() => {
+        try {
+          ws.send('ping')
+        } catch {}
+      }, 30_000)
     })
 
     ws.addEventListener('message', async (event) => {
@@ -34,6 +42,7 @@ export function connectToRelay(mcp: Server, config: ChannelConfig) {
     })
 
     ws.addEventListener('close', (event) => {
+      if (pingInterval) clearInterval(pingInterval)
       console.error(`[github-ci] Disconnected (code=${event.code}). Reconnecting in ${backoff}ms...`)
       scheduleReconnect()
     })

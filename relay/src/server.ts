@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { loadConfig } from './config.js'
 import { initDatabase, getDb } from './db.js'
 import { hashToken } from './crypto.js'
-import { addClient, removeClient } from './connections.js'
+import { addClient, removeClient, pingAllClients } from './connections.js'
 import { health } from './routes/health.js'
 import { createAuthRoutes } from './routes/auth.js'
 import { createMeRoutes } from './routes/me.js'
@@ -79,7 +79,13 @@ const server = Bun.serve<WsData>({
     message(_ws, _msg) {
       // Clients don't send messages to relay in V1
     },
+    pong(_ws) {
+      // Pong received — client is alive, nothing to do
+    },
   },
 })
+
+// Send WebSocket pings every 30s to keep connections alive through proxies
+setInterval(pingAllClients, 30_000)
 
 console.error(`[relay] Server running on port ${config.port}`)

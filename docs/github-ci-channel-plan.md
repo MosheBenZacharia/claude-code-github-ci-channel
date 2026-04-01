@@ -58,7 +58,7 @@ Mark tasks as complete by changing `[ ]` to `[x]`.
 - [x] Broadcast accepted webhook envelopes to all sockets for the matching user
 - [x] Remove sockets cleanly on disconnect and failed writes
 - [x] Force-disconnect live sockets authenticated with a revoked token during token rotation
-- [ ] Add ping/pong or equivalent keepalive behavior if needed by the hosting environment
+- [x] Add ping/pong or equivalent keepalive behavior if needed by the hosting environment
 
 ## Phase 5 — Channel Server Core
 
@@ -88,7 +88,7 @@ Mark tasks as complete by changing `[ ]` to `[x]`.
 - [x] Finalize `.mcp.json`
 - [x] Implement `/github-ci:configure <clientToken>`
 - [x] Write the client token to `~/.claude/channels/github-ci/.env`
-- [ ] Ensure the saved local config is written with restrictive file permissions
+- [x] Ensure the saved local config is written with restrictive file permissions
 - [x] Write the plugin README with install, configure, and run instructions
 - [x] Document the optional relay URL override for development and self-hosting
 
