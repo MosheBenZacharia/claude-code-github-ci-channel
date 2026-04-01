@@ -1,18 +1,19 @@
 # GitHub CI Channel for Claude Code — Spec
 
 A Claude Code channel that pushes GitHub Actions CI failures into running
-Claude Code sessions, scoped to the session's current repository and git
-commit. Branch is retained as context only. Modelled on the official
-Discord/iMessage channel plugins.
+Claude Code sessions, scoped to the session's current repository. Claude
+receives rich context (branch, commit, local HEAD, conclusion) and decides
+if the failure is relevant. Modelled on the official Discord/iMessage
+channel plugins.
 
 ---
 
 ## Overview
 
-When a GitHub Actions check run fails for a commit, the relevant Claude Code
-session(s) — those whose working directory is on the matching repository and
-`HEAD` commit — receive a channel notification and can react immediately.
-Sessions on other repos or commits are unaffected.
+When a GitHub Actions check run fails, Claude Code sessions whose working
+directory matches the failing repository receive a channel notification with
+full context. Claude decides if the failure is relevant to current work.
+Sessions on other repos are unaffected.
 
 The system has two components:
 
@@ -22,9 +23,9 @@ The system has two components:
 
 2. **Channel server** (`server.ts`) — a local MCP server spawned by each
    Claude Code instance. Connects outward to the relay, receives broadcasts,
-   checks the local repository, branch, and `HEAD` commit, and emits a
-   `notifications/claude/channel` event into its Claude Code session when the
-   repository and commit match.
+   checks the local repository, and emits a `notifications/claude/channel`
+   event with rich context into its Claude Code session when the repository
+   matches.
 
 This mirrors how the Discord plugin works: Discord's gateway plays the role of
 the relay server, and each Claude Code instance makes an outbound WebSocket
@@ -45,9 +46,9 @@ Relay server  (deployed, publicly reachable)
   ▼
 Channel server instances  (local, one per Claude Code session)
   │  receive broadcast
-  │  determine current repo + git branch + HEAD commit
-  │  repo + HEAD commit match event payload?
-  ├─ yes → mcp.notification() → Claude Code session
+  │  determine current repo from git remote
+  │  repo matches event payload?
+  ├─ yes → mcp.notification() with rich context → Claude Code session
   └─ no  → drop
 ```
 
@@ -243,8 +244,8 @@ migrate the relay from SQLite-on-volume to hosted `Postgres` plus a pub/sub fan-
 - Read `clientToken` from `~/.claude/channels/github-ci/.env`
 - Connect outward to the relay server via WebSocket
 - Receive broadcast payloads
-- Check the current git repository, branch, and `HEAD` commit against the payload
-- Emit `notifications/claude/channel` into the Claude Code session on match
+- Check the current git repository against the payload
+- Emit `notifications/claude/channel` with rich context into the Claude Code session on repo match
 - Reconnect automatically on disconnect
 - Register with Claude Code as a channel MCP server
 
@@ -291,32 +292,36 @@ On each message received from the relay:
    const checkName = payload.check_run.name
    const runUrl = payload.check_run.html_url
    ```
-4. Run `git rev-parse HEAD` in the working directory
-5. Determine the local repo identity from `git config --get remote.origin.url`
+4. Determine the local repo identity from `git config --get remote.origin.url`
    and normalize it to `owner/repo`
-6. Optionally run `git branch --show-current` for logging and UI context
-7. If repo and commit SHA match, emit:
+5. If the repo does not match, drop silently
+6. Run `git rev-parse HEAD` and `git branch --show-current` for local context
+7. Emit with rich context so Claude can assess relevance:
    ```ts
    mcp.notification({
      method: 'notifications/claude/channel',
      params: {
-       content: 'GitHub CI failure on the current repo/commit.',
+       content: `GitHub CI failure: "${checkName}" ${conclusion} on ${eventRepo} (branch: ${eventBranch}, commit: ${eventSha}). Your local HEAD is ${localHead} on branch ${localBranch}.`,
        meta: {
-         branch: eventBranch,
-         check:  checkName,
-         delivery_id: deliveryId,
-         head_sha: eventSha,
-         repo:   eventRepo,
-         run_url: runUrl,
+         branch:       eventBranch,
+         check:        checkName,
+         conclusion:   conclusion,
+         delivery_id:  deliveryId,
+         head_sha:     eventSha,
+         local_head:   localHead,
+         local_branch: localBranch,
+         same_commit:  localHead === eventSha ? 'true' : 'false',
+         repo:         eventRepo,
+         run_url:      runUrl,
        },
      },
    })
    ```
-8. If repo or commit SHA do not match, drop silently
 
-Commit SHA is the authoritative match key. Branch is included as context, but
-is not sufficient on its own because the local branch may have advanced past the
-failing commit before the webhook arrives.
+Matching is on repository only. The local HEAD, branch, and whether the
+commit matches are included as context so Claude can decide if the failure
+is relevant to current work. This avoids silently dropping notifications
+when the developer has continued working past the failing commit.
 
 ### Reconnection
 
@@ -336,7 +341,9 @@ const mcp = new Server(
     },
     instructions:
       'CI failure notifications arrive as <channel source="github-ci" ...>. ' +
-      'The failing repo and commit match your current workspace. Investigate the failure.',
+      'The repo matches your workspace. Check same_commit to see if the failure is on your exact HEAD commit. ' +
+      'Key attributes: check (test name), conclusion (failure/timed_out), branch, head_sha (failing commit), ' +
+      'local_head (your HEAD), local_branch, run_url (link to the failing run). Investigate the failure.',
   },
 )
 ```
@@ -372,7 +379,7 @@ github-ci/
   "mcpServers": {
     "github-ci": {
       "command": "bun",
-      "args": ["run", "--cwd", "${CLAUDE_PLUGIN_ROOT}", "--shell=bun", "--silent", "server.ts"]
+      "args": ["run", "${CLAUDE_PLUGIN_ROOT}/server.ts"]
     }
   }
 }
@@ -400,7 +407,7 @@ manually for development or self-hosting.
 
 Start with channels enabled:
 ```bash
-claude --dangerously-load-development-channels --channels plugin:github-ci@<marketplace>
+claude --dangerously-load-development-channels plugin:github-ci@<marketplace>
 ```
 
 ---
@@ -420,21 +427,20 @@ claude --dangerously-load-development-channels --channels plugin:github-ci@<mark
    /reload-plugins
    /github-ci:configure <clientToken>
    ```
-6. Restart with `claude --dangerously-load-development-channels --channels plugin:github-ci@<marketplace>`
-7. Push a branch or open a PR — the next failing check run on that repo/commit
-   notifies the relevant session
+6. Restart with `claude --dangerously-load-development-channels plugin:github-ci@<marketplace>`
+7. Push a branch or open a PR — the next failing check run on that repo
+   notifies the relevant session with full context
 
 ---
 
 ## Multi-instance behaviour
 
 Multiple Claude Code sessions on the same machine connect independently to the
-relay. Each opens its own WebSocket connection and performs its own repo and
-commit check, with branch used only as extra context. A user working on
-`feature/auth` and `feature/payments`
-simultaneously, or on two different repos that both have a `main` branch, gets
-notified only in the session on the matching repo/commit. This is the same
-fan-out model the Discord and iMessage plugins use.
+relay. Each opens its own WebSocket connection and checks the local repo against
+the event payload. A user working on two different repos simultaneously gets
+notified only in the session on the matching repo. Each notification includes
+full context (branch, commit, local HEAD) so Claude can assess relevance. This
+is the same fan-out model the Discord and iMessage plugins use.
 
 ---
 
