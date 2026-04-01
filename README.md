@@ -123,15 +123,16 @@ Push a commit or open a PR. When a CI check run fails on your repo, Claude Code 
 The relay is a Bun + Hono server backed by SQLite. To self-host:
 
 1. Clone the repo and `cd relay`
-2. Copy `.env.example` to `.env` and fill in the values
+2. Copy `.env.example` to `.env` and fill in the values — in particular, set `PUBLIC_URL` to your relay's public URL (e.g. `https://relay.example.com`). This is used for OAuth callbacks and the webhook URLs shown to users.
 3. Create a [GitHub OAuth App](https://github.com/settings/developers) with callback URL `https://your-host/auth/github/callback`
-4. Run with `bun run src/server.ts`
+4. `bun install` and run with `bun run src/server.ts`
+5. Visit `https://your-host/auth/github/start` to sign in and get your credentials (webhook URL, webhook secret, client token) from your own relay instance
 
-Then set the override in your local config:
+Then configure Claude Code to use your relay:
 
 ```
 # ~/.claude/channels/github-ci/.env
-GITHUB_CI_CLIENT_TOKEN=ct_...
+GITHUB_CI_CLIENT_TOKEN=<token from your relay's /me page>
 GITHUB_CI_RELAY_URL=wss://your-host/connect
 ```
 
