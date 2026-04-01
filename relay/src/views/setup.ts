@@ -495,7 +495,8 @@ export function setupPage(data: SetupPageData): string {
         <label>Client Token</label>
         ${data.clientToken ? `
         <div class="field-row">
-          <input type="text" readonly value="${esc(data.clientToken)}" id="clientToken" />
+          <input type="password" readonly value="${esc(data.clientToken)}" id="clientToken" />
+          <button class="btn btn-reveal" onclick="toggleReveal('clientToken', this)" title="Show/hide">${eyeIcon}</button>
           <button class="btn btn-copy" onclick="copy('clientToken')">Copy</button>
           <button class="btn btn-danger" onclick="rotateClientToken()" title="Revoke current token and generate a new one — disconnects active sessions">Rotate</button>
         </div>
@@ -613,9 +614,20 @@ export function setupPage(data: SetupPageData): string {
       if (data.clientToken) {
         const input = document.getElementById('clientToken');
         input.value = data.clientToken;
+        input.type = 'password';
         input.placeholder = '';
         input.classList.remove('hidden-token');
-        const copyBtn = input.parentElement.querySelector('.btn-copy');
+        const row = input.parentElement;
+        // Add reveal button if not present
+        if (!row.querySelector('.btn-reveal')) {
+          const revealBtn = document.createElement('button');
+          revealBtn.className = 'btn btn-reveal';
+          revealBtn.title = 'Show/hide';
+          revealBtn.innerHTML = '${eyeIcon}';
+          revealBtn.onclick = function() { toggleReveal('clientToken', revealBtn); };
+          row.insertBefore(revealBtn, row.querySelector('.btn-copy'));
+        }
+        const copyBtn = row.querySelector('.btn-copy');
         if (copyBtn) {
           copyBtn.disabled = false;
         }
