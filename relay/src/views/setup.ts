@@ -167,7 +167,7 @@ export function setupPage(data: SetupPageData): string {
       flex: 1;
     }
 
-    input[type="text"], .secret-display {
+    input[type="text"], input[type="password"], .secret-display {
       width: 100%;
       background: var(--input-bg);
       border: 1px solid var(--input-border);
@@ -179,7 +179,7 @@ export function setupPage(data: SetupPageData): string {
       outline: none;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, input[type="password"]:focus {
       border-color: var(--focus-color);
       box-shadow: 0 0 0 3px var(--focus-shadow);
     }
