@@ -50,11 +50,11 @@ claude --dangerously-load-development-channels plugin:github-ci@github-ci-channe
 
 ## How it works
 
-When a GitHub Actions check run fails for a commit you're working on, the channel sends a notification to your Claude Code session. Only sessions whose working directory matches the failing repo and HEAD commit receive the notification.
+When a GitHub Actions check run fails on your repo, the channel sends a notification to your Claude Code session with full context (branch, commit, check name, run URL, and your local HEAD). Claude decides if the failure is relevant to current work. Sessions on other repos are unaffected.
 
 The system has two parts:
 - **Relay server** (deployed) — receives GitHub webhooks and broadcasts them over WebSocket to connected clients
-- **Channel server** (local, this plugin) — connects to the relay, matches events against your local repo + HEAD commit, and emits notifications into your session
+- **Channel server** (local, this plugin) — connects to the relay, matches events against your local repo, and emits rich notifications into your session
 
 ## Development
 

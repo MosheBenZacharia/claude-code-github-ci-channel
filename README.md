@@ -1,8 +1,8 @@
 # GitHub CI Channel for Claude Code
 
-A [Claude Code channel](https://code.claude.com/docs/en/channels) that pushes GitHub Actions CI failures into running Claude Code sessions. When a check run fails on the commit you're working on, Claude gets notified and can start investigating immediately.
+A [Claude Code channel](https://code.claude.com/docs/en/channels) that pushes GitHub Actions CI failures into running Claude Code sessions. When a check run fails on your repo, Claude gets notified with full context and can start investigating immediately.
 
-Only sessions whose working directory matches the failing repo **and** HEAD commit receive the notification. Sessions on other repos or commits are unaffected.
+Sessions whose working directory matches the failing repo receive the notification with rich context (branch, commit, check name, conclusion, run URL, and your local HEAD). Claude decides if the failure is relevant to current work. Sessions on other repos are unaffected.
 
 ## How it works
 
@@ -17,7 +17,7 @@ Relay server (deployed on Railway)
   v
 Channel server (local, one per Claude Code session)
   |  receive broadcast
-  |  match against local repo + HEAD commit
+  |  match against local repo, include local context
   v
 Claude Code session
   |  <channel source="github-ci" repo="..." check="..." run_url="...">
@@ -116,7 +116,7 @@ claude --dangerously-load-development-channels plugin:github-ci@github-ci-channe
 
 ### 5. Trigger a failure
 
-Push a commit or open a PR. When a CI check run fails on the repo and commit you have checked out locally, Claude Code receives the notification and can start investigating.
+Push a commit or open a PR. When a CI check run fails on your repo, Claude Code receives the notification with full context and can start investigating.
 
 ## Self-hosting the relay
 

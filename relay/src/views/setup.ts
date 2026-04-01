@@ -553,7 +553,7 @@ export function setupPage(data: SetupPageData): string {
           <div class="code-block">
             <div class="code-line"><code>claude --dangerously-load-development-channels plugin:github-ci@github-ci-channel</code><button class="copy-icon" onclick="copyCmd(this)" title="Copy">${copyIcon}</button></div>
           </div>
-          Push a commit or open a PR. When a CI check fails on your current repo and commit, Claude Code will be notified.
+          Push a commit or open a PR. When a CI check fails on your repo, Claude Code will be notified with full context.
         </div>
       </div>
     </div>
