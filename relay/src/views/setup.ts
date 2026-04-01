@@ -547,6 +547,10 @@ export function setupPage(data: SetupPageData): string {
         <p class="log-empty">No deliveries yet. Add the webhook to your GitHub repo to see events here.</p>
       </div>
     </div>
+
+    <footer style="text-align:center;padding:24px 0 8px;font-size:13px;color:var(--text-muted);">
+      Made by <a href="https://moshebenzacharia.com" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Moshe Ben-Zacharia</a>
+    </footer>
   </div>
 
   <script>
