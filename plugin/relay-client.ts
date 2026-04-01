@@ -43,6 +43,10 @@ export function connectToRelay(mcp: Server, config: ChannelConfig) {
 
     ws.addEventListener('close', (event) => {
       if (pingInterval) clearInterval(pingInterval)
+      if (event.code === 4401) {
+        console.error('[github-ci] Token revoked or invalid. Run /github-ci:configure <new-token> to reconfigure.')
+        return // Do not reconnect — token is permanently invalid
+      }
       console.error(`[github-ci] Disconnected (code=${event.code}). Reconnecting in ${backoff}ms...`)
       scheduleReconnect()
     })

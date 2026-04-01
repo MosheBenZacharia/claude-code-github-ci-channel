@@ -7,11 +7,9 @@ import { mkdtempSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
-const TEST_PORT = 9876 + Math.floor(Math.random() * 1000)
-const BASE_URL = `http://localhost:${TEST_PORT}`
-const WS_URL = `ws://localhost:${TEST_PORT}/connect`
-
-let server: ReturnType<typeof createServer>
+let server: ReturnType<typeof createServer> | null = null
+let BASE_URL: string
+let WS_URL: string
 let testUser: { id: string; webhookSecret: string; clientToken: string; tokenHash: string }
 
 beforeAll(() => {
@@ -19,13 +17,17 @@ beforeAll(() => {
   const dbPath = join(tmpDir, 'test.sqlite')
 
   server = createServer({
-    port: TEST_PORT,
+    port: 0, // Let the OS assign a free port
     databasePath: dbPath,
     sessionSecret: 'test-session-secret',
     githubClientId: 'test-client-id',
     githubClientSecret: 'test-client-secret',
-    publicUrl: BASE_URL,
+    publicUrl: 'http://localhost',
   })
+
+  const assignedPort = server.port
+  BASE_URL = `http://localhost:${assignedPort}`
+  WS_URL = `ws://localhost:${assignedPort}/connect`
 
   // Seed a test user
   const db = getDb()
@@ -48,7 +50,7 @@ beforeAll(() => {
 })
 
 afterAll(() => {
-  server.stop(true)
+  server?.stop(true)
 })
 
 function signPayload(secret: string, body: string): string {

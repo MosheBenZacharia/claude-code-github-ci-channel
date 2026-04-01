@@ -643,6 +643,12 @@ export function setupPage(data: SetupPageData): string {
       }
     }
 
+    function escHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
     async function pollWebhookLog() {
       try {
         const res = await fetch('/me/webhook-log');
@@ -657,10 +663,10 @@ export function setupPage(data: SetupPageData): string {
             const t = new Date(e.timestamp);
             const time = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             return '<tr>' +
-              '<td><span class="log-badge ' + e.status + '">' + e.status + '</span></td>' +
-              '<td class="log-event">' + e.event + '</td>' +
-              '<td>' + e.summary + '</td>' +
-              '<td class="log-time">' + time + '</td>' +
+              '<td><span class="log-badge ' + escHtml(e.status) + '">' + escHtml(e.status) + '</span></td>' +
+              '<td class="log-event">' + escHtml(e.event) + '</td>' +
+              '<td>' + escHtml(e.summary) + '</td>' +
+              '<td class="log-time">' + escHtml(time) + '</td>' +
               '</tr>';
           }).join('') +
           '</tbody></table>';

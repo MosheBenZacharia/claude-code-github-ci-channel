@@ -267,8 +267,8 @@ describe('webhook log', () => {
     logWebhook(userId, e1)
     logWebhook(userId, e2)
     const log = getWebhookLog(userId)
-    expect(log[0].summary).toBe('second')
-    expect(log[1].summary).toBe('first')
+    expect(log[0]!.summary).toBe('second')
+    expect(log[1]!.summary).toBe('first')
   })
 
   test('respects max entries limit (20)', () => {
@@ -279,7 +279,7 @@ describe('webhook log', () => {
     const log = getWebhookLog(userId)
     expect(log).toHaveLength(20)
     // Most recent should be entry-24
-    expect(log[0].summary).toBe('entry-24')
+    expect(log[0]!.summary).toBe('entry-24')
   })
 
   test('different users have independent logs', () => {
@@ -289,7 +289,7 @@ describe('webhook log', () => {
     logWebhook(userB, makeEntry({ summary: 'b-entry' }))
     expect(getWebhookLog(userA)).toHaveLength(1)
     expect(getWebhookLog(userB)).toHaveLength(1)
-    expect(getWebhookLog(userA)[0].summary).toBe('a-entry')
-    expect(getWebhookLog(userB)[0].summary).toBe('b-entry')
+    expect(getWebhookLog(userA)[0]!.summary).toBe('a-entry')
+    expect(getWebhookLog(userB)[0]!.summary).toBe('b-entry')
   })
 })

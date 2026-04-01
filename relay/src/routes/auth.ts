@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
+import { randomBytes } from 'node:crypto'
 import type { RelayConfig } from '../config.js'
 import { getDb } from '../db.js'
 import { generateId, hashToken } from '../crypto.js'
@@ -9,10 +10,20 @@ export function createAuthRoutes(config: RelayConfig) {
   const auth = new Hono()
 
   auth.get('/auth/github/start', (c) => {
+    const state = randomBytes(16).toString('hex')
+    setCookie(c, 'oauth_state', state, {
+      httpOnly: true,
+      secure: config.publicUrl.startsWith('https'),
+      sameSite: 'Lax',
+      path: '/auth/github/callback',
+      maxAge: 300,
+    })
+
     const params = new URLSearchParams({
       client_id: config.githubClientId,
       redirect_uri: `${config.publicUrl}/auth/github/callback`,
       scope: 'read:user',
+      state,
     })
     return c.redirect(`https://github.com/login/oauth/authorize?${params}`)
   })
@@ -20,6 +31,15 @@ export function createAuthRoutes(config: RelayConfig) {
   auth.get('/auth/github/callback', async (c) => {
     const code = c.req.query('code')
     if (!code) return c.text('Missing code', 400)
+
+    // Verify CSRF state
+    const state = c.req.query('state')
+    const expectedState = getCookie(c, 'oauth_state')
+    if (!state || !expectedState || state !== expectedState) {
+      return c.text('Invalid state parameter', 403)
+    }
+    // Clear the state cookie
+    setCookie(c, 'oauth_state', '', { path: '/auth/github/callback', maxAge: 0 })
 
     // Exchange code for access token
     const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
