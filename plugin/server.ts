@@ -13,7 +13,9 @@ const mcp = new Server(
     },
     instructions:
       'CI failure notifications arrive as <channel source="github-ci" ...>. ' +
-      'The failing repo and commit match your current workspace. Investigate the failure.',
+      'The repo matches your workspace. Check same_commit to see if the failure is on your exact HEAD commit. ' +
+      'Key attributes: check (test name), conclusion (failure/timed_out), branch, head_sha (failing commit), ' +
+      'local_head (your HEAD), local_branch, run_url (link to the failing run). Investigate the failure.',
   },
 )
 

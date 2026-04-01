@@ -2,17 +2,26 @@ import { $ } from 'bun'
 
 let cachedRepo: string | null = null
 
-export async function matchesLocalRepo(eventRepo: string, eventSha: string): Promise<boolean> {
+export async function matchesLocalRepo(eventRepo: string): Promise<boolean> {
   try {
-    const localSha = (await $`git rev-parse HEAD`.text()).trim()
-    if (localSha !== eventSha) return false
-
     const localRepo = await getLocalRepo()
     if (!localRepo) return false
-
     return normalizeRepo(localRepo) === normalizeRepo(eventRepo)
   } catch {
     return false
+  }
+}
+
+export async function getLocalContext(): Promise<{ head: string; branch: string } | null> {
+  try {
+    const head = (await $`git rev-parse HEAD`.text()).trim()
+    let branch = ''
+    try {
+      branch = (await $`git branch --show-current`.text()).trim()
+    } catch {}
+    return { head, branch }
+  } catch {
+    return null
   }
 }
 

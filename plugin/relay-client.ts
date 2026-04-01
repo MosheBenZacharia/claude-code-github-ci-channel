@@ -1,6 +1,6 @@
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import type { ChannelConfig } from './config.js'
-import { matchesLocalRepo } from './git-match.js'
+import { matchesLocalRepo, getLocalContext } from './git-match.js'
 
 interface RelayEnvelope {
   deliveryId: string
@@ -77,20 +77,31 @@ async function handleEnvelope(mcp: Server, envelope: RelayEnvelope) {
 
   if (!eventRepo || !eventSha) return
 
-  const match = await matchesLocalRepo(eventRepo, eventSha)
-  if (!match) return
+  const repoMatch = await matchesLocalRepo(eventRepo)
+  if (!repoMatch) return
 
-  console.error(`[github-ci] CI failure matched: ${checkName} on ${eventRepo}@${eventSha.slice(0, 7)}`)
+  const local = await getLocalContext()
+  const localHead = local?.head ?? 'unknown'
+  const localBranch = local?.branch ?? 'unknown'
+  const sameCommit = localHead === eventSha ? 'true' : 'false'
+
+  console.error(
+    `[github-ci] CI failure on ${eventRepo}: ${checkName} (${eventBranch}@${eventSha.slice(0, 7)}, local HEAD=${localHead.slice(0, 7)}, same_commit=${sameCommit})`,
+  )
 
   await mcp.notification({
     method: 'notifications/claude/channel',
     params: {
-      content: 'GitHub CI failure on the current repo/commit.',
+      content: `GitHub CI failure: "${checkName}" ${payload.check_run?.conclusion} on ${eventRepo} (branch: ${eventBranch}, commit: ${eventSha.slice(0, 7)}). Your local HEAD is ${localHead.slice(0, 7)} on branch ${localBranch}.`,
       meta: {
         branch: eventBranch,
         check: checkName,
+        conclusion: payload.check_run?.conclusion,
         delivery_id: deliveryId,
         head_sha: eventSha,
+        local_head: localHead,
+        local_branch: localBranch,
+        same_commit: sameCommit,
         repo: eventRepo,
         run_url: runUrl,
       },
