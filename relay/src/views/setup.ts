@@ -10,6 +10,10 @@ const copyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" st
 
 const checkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
 
+const eyeIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+
+const eyeOffIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+
 export function setupPage(data: SetupPageData): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -221,6 +225,16 @@ export function setupPage(data: SetupPageData): string {
 
     .btn[title] {
       position: relative;
+    }
+
+    .btn-reveal {
+      padding: 10px 8px;
+      min-width: 0;
+      color: var(--text-muted);
+    }
+
+    .btn-reveal:hover {
+      color: var(--text);
     }
 
     .alert {
@@ -461,7 +475,8 @@ export function setupPage(data: SetupPageData): string {
       <div class="field">
         <label>Webhook URL</label>
         <div class="field-row">
-          <input type="text" readonly value="${esc(data.webhookUrl)}" id="webhookUrl" />
+          <input type="password" readonly value="${esc(data.webhookUrl)}" id="webhookUrl" />
+          <button class="btn btn-reveal" onclick="toggleReveal('webhookUrl', this)" title="Show/hide">${eyeIcon}</button>
           <button class="btn btn-copy" onclick="copy('webhookUrl')">Copy</button>
         </div>
       </div>
@@ -469,7 +484,8 @@ export function setupPage(data: SetupPageData): string {
       <div class="field">
         <label>Webhook Secret</label>
         <div class="field-row">
-          <input type="text" readonly value="${esc(data.webhookSecret)}" id="webhookSecret" />
+          <input type="password" readonly value="${esc(data.webhookSecret)}" id="webhookSecret" />
+          <button class="btn btn-reveal" onclick="toggleReveal('webhookSecret', this)" title="Show/hide">${eyeIcon}</button>
           <button class="btn btn-copy" onclick="copy('webhookSecret')">Copy</button>
           <button class="btn btn-danger" onclick="rotateWebhookSecret()" title="Rotate if compromised — you'll need to update your GitHub webhook settings">Rotate</button>
         </div>
@@ -564,6 +580,17 @@ export function setupPage(data: SetupPageData): string {
         btn.innerHTML = '${copyIcon}';
         btn.classList.remove('copied');
       }, 2000);
+    }
+
+    function toggleReveal(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '${eyeOffIcon}';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '${eyeIcon}';
+      }
     }
 
     function copy(id) {
