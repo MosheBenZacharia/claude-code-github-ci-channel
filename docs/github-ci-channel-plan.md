@@ -33,7 +33,7 @@ Mark tasks as complete by changing `[ ]` to `[x]`.
 - [x] Generate a per-user webhook secret at onboarding
 - [x] Generate an initial client token at onboarding and store only its hash
 - [x] Implement `GET /me`
-- [ ] Build the minimal setup page that shows `webhookUrl`, `webhookSecret`, and `clientToken`
+- [x] Build the minimal setup page that shows `webhookUrl`, `webhookSecret`, and `clientToken`
 - [x] Implement `POST /me/rotate-client-token`
 - [x] Implement `POST /me/rotate-webhook-secret`
 
@@ -94,12 +94,12 @@ Mark tasks as complete by changing `[ ]` to `[x]`.
 
 ## Phase 8 — Railway Deployment
 
-- [ ] Create the Railway service for the relay
-- [ ] Attach a persistent volume to the Railway service
-- [ ] Set `DATABASE_PATH` to the SQLite file on the mounted volume
-- [ ] Configure the required environment variables in Railway
-- [ ] Expose the relay over HTTPS/WSS
-- [ ] Verify that `GET /health` works through the deployed URL
+- [x] Create the Railway service for the relay
+- [x] Attach a persistent volume to the Railway service
+- [x] Set `DATABASE_PATH` to the SQLite file on the mounted volume
+- [x] Configure the required environment variables in Railway
+- [x] Expose the relay over HTTPS/WSS
+- [x] Verify that `GET /health` works through the deployed URL
 - [ ] Verify that a redeploy preserves the SQLite database on the attached volume
 - [ ] Verify that channel clients reconnect after a relay restart or redeploy
 
