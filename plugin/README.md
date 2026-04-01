@@ -43,7 +43,7 @@ In Claude Code:
 ### 4. Start with channels enabled
 
 ```bash
-claude --dangerously-load-development-channels --channels plugin:github-ci@github-ci-channel
+claude --dangerously-load-development-channels plugin:github-ci@github-ci-channel
 ```
 
 > **Note**: Channels are in research preview. Third-party channel plugins require `--dangerously-load-development-channels` until they're added to an approved allowlist.
