@@ -55,6 +55,12 @@ export function createServer(config: RelayConfig) {
         return undefined
       }
 
+      // Serve static icon
+      if (url.pathname === '/icon.jpg') {
+        const file = Bun.file(new URL('./static/icon.jpg', import.meta.url).pathname)
+        return new Response(file, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' } })
+      }
+
       return app.fetch(req)
     },
     websocket: {
